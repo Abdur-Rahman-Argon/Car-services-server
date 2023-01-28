@@ -37,6 +37,25 @@ async function run() {
       const service = await serviceCollection.findOne(query);
       res.send(service);
     });
+
+    // orders api
+    app.get("/orders", verifyJWT, async (req, res) => {
+      const decoded = req.decoded;
+
+      if (decoded.email !== req.query.email) {
+        res.status(403).send({ message: "unauthorized access" });
+      }
+
+      let query = {};
+      if (req.query.email) {
+        query = {
+          email: req.query.email,
+        };
+      }
+      const cursor = orderCollection.find(query);
+      const orders = await cursor.toArray();
+      res.send(orders);
+    });
   } finally {
   }
 }
